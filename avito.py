@@ -37,11 +37,11 @@ def text_corp_to_csv(text_corp):
 	text_corp['price'].to_csv('price_token.csv', sep=',', encoding='utf-8')
 	text_corp['category_id'].to_csv('category.csv', sep=',', encoding='utf-8')
 
-def vectorize(text_corpus):
+def vectorize(text_corpus, u_idf):
 	count_vect = CountVectorizer(ngram_range=(1,2))
 	X_train_counts = count_vect.fit_transform(text_corpus)
 	numpy.savetxt('feature_names.csv', numpy.array(X_train_counts.get_feature_names()))
-	tfidf_transformer = TfidfTransformer()
+	tfidf_transformer = TfidfTransformer(use_idf=u_idf)
 	X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
 	print(X_train_tfidf.shape)
 	return X_train_tfidf
@@ -59,8 +59,8 @@ def tokens_normalize(tokens):
 data = read_data()
 text_corp = token_text_corp(data)
 text_corp_to_csv(text_corp)
-x_title = vectorize(text_corp['title'])
-x_description = vectorize(text_corp['description'])
+x_title = vectorize(text_corp['title'], False)
+x_description = vectorize(text_corp['description'], True)
 
 numpy.savetxt("x_title.csv", x_title, delimiter=",", encoding='utf-8')
 numpy.savetxt("x_description.csv", x_description, delimiter=",", encoding='utf-8')
